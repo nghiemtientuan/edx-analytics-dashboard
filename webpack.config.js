@@ -8,7 +8,7 @@ var Merge = require('webpack-merge'),
 module.exports = Merge.smart(commonConfig, {
     output: {
         // Tells clients to load bundles from the dev-server
-        publicPath: 'http://localhost:8080/static/bundles/',
+        publicPath: 'http://localhost:8888/static/bundles/',
         // Bundle names will change every build. [hash] is faster than [chunkhash].
         filename: '[name]-[hash].js'
     },
@@ -82,6 +82,7 @@ module.exports = Merge.smart(commonConfig, {
             'Access-Control-Allow-Origin': '*'
         },
         host: '0.0.0.0',
+        port: 8888,
         // Webpack does not process all images in Insights, so proxy all image requests through to django static files
         proxy: {
             // This assumes that the developer is running the django dev server on the default host and port

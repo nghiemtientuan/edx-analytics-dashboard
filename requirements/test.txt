@@ -61,7 +61,7 @@ pbr==5.4.5                # via -r requirements/base.txt, stevedore
 pinax-announcements==3.0.2  # via -r requirements/base.txt
 pluggy==0.13.1            # via pytest
 polib==1.1.0              # via -r requirements/base.txt, edx-i18n-tools
-psutil==1.2.1             # via -r requirements/base.txt, edx-django-utils
+psutil             # via -r requirements/base.txt, edx-django-utils
 py==1.8.1                 # via pytest
 pycodestyle==2.5.0        # via -r requirements/test.in
 pycryptodomex==3.9.7      # via -r requirements/base.txt, pyjwkest

@@ -60,7 +60,7 @@ DATABASES = {
         },
     }
 }
-########## END DATABASE CONFIGURATION
+########## END DATABASE CONFIGURATIONBACKEND_SERVICE_EDX_OAUTH2_PROVIDER_URL
 
 
 ########## GENERAL CONFIGURATION
@@ -129,7 +129,7 @@ SECRET_KEY = 'YOUR_SECRET_KEY_HERE'
 ########## SITE CONFIGURATION
 # Hosts/domain names that are valid for this site
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 ########## END SITE CONFIGURATION
 
 
@@ -296,9 +296,9 @@ TERMS_OF_SERVICE_URL = 'http://example.com/terms-service'
 ########## END FEEDBACK
 
 ########## EMAIL CONFIG
-EMAIL_HOST = 'smtp.example.com'
-EMAIL_HOST_PASSWORD = 'mail_password'
-EMAIL_HOST_USER = 'mail_user'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_PASSWORD = 'khongcomatkhau'
+EMAIL_HOST_USER = 'nghiemthihachi@gmail.com'
 EMAIL_PORT = 587
 ########## END EMAIL CONFIG
 
@@ -316,8 +316,8 @@ DOCUMENTATION_LOAD_ERROR_MESSAGE = '<a href="{error_documentation_link}" target=
 
 
 ########## DATA API CONFIGURATION
-DATA_API_URL = 'http://127.0.0.1:9001/api/v0'
-DATA_API_AUTH_TOKEN = 'changeme'
+DATA_API_URL = 'http://127.0.0.1:8000/api/v0'
+DATA_API_AUTH_TOKEN = '09e0bad55e281f808174d6639d88e97e56ae602e'
 ########## END DATA API CONFIGURATION
 
 # used to determine if a course ID is valid
@@ -327,7 +327,7 @@ LMS_COURSE_VALIDATION_BASE_URL = None
 LMS_COURSE_SHORTCUT_BASE_URL = 'URL_FOR_LMS_COURSE_LIST_PAGE'
 
 # used to construct the shortcut link to view/edit a course in Studio
-CMS_COURSE_SHORTCUT_BASE_URL = 'http://127.0.0.1:8000/courses/'
+CMS_COURSE_SHORTCUT_BASE_URL = 'http://127.0.0.1:18000/courses/'
 
 # Used to determine how dates and time are displayed in templates
 # The strings are intended for use with the django.utils.dateformat
@@ -353,15 +353,15 @@ SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'email']
 SOCIAL_AUTH_STRATEGY = 'auth_backends.strategies.EdxDjangoStrategy'
 
 # Set these to the correct values for your OAuth2 provider (e.g., devstack)
-SOCIAL_AUTH_EDX_OAUTH2_KEY = "insights-sso-key"
-SOCIAL_AUTH_EDX_OAUTH2_SECRET = "insights-sso-secret"
-SOCIAL_AUTH_EDX_OAUTH2_ISSUER = "http://127.0.0.1:8000"
-SOCIAL_AUTH_EDX_OAUTH2_URL_ROOT = "http://127.0.0.1:8000"
-SOCIAL_AUTH_EDX_OAUTH2_LOGOUT_URL = "http://127.0.0.1:8000/logout"
+SOCIAL_AUTH_EDX_OAUTH2_KEY = "yv1nyVpVbqW0i51hHJ48NA9NtrIc9hVvo2nKMfrx"
+SOCIAL_AUTH_EDX_OAUTH2_SECRET = "W3TzNnn9hzrKlQ5mGqM6wejGgNQmUJo0HckS87uVh5qBNjSvENqzCJOg4L1KSL6enkPFwcvRGovHoX81UakpIBGoaIaaFkgHE2rUNuO9S8OxYm7FfT1HtOu4JXKHcXUD"
+SOCIAL_AUTH_EDX_OAUTH2_ISSUER = "http://127.0.0.1:18000"
+SOCIAL_AUTH_EDX_OAUTH2_URL_ROOT = "http://127.0.0.1:18000"
+SOCIAL_AUTH_EDX_OAUTH2_LOGOUT_URL = "http://127.0.0.1:18000/logout"
 
 BACKEND_SERVICE_EDX_OAUTH2_KEY = "insights-backend-service-key"
 BACKEND_SERVICE_EDX_OAUTH2_SECRET = "insights-backend-service-secret"
-BACKEND_SERVICE_EDX_OAUTH2_PROVIDER_URL = "http://127.0.0.1:8000/oauth2"
+BACKEND_SERVICE_EDX_OAUTH2_PROVIDER_URL = "http://127.0.0.1:18000/oauth2"
 
 # Enables a special view that, when accessed, creates and logs in a new user.
 # This should NOT be enabled for production deployments!
@@ -384,7 +384,7 @@ ENABLE_COURSE_PERMISSIONS = True
 ########## END AUTHENTICATION
 
 # The application and platform display names to be used in templates, emails, etc.
-PLATFORM_NAME = 'edx'
+PLATFORM_NAME = 'BKEdx'
 APPLICATION_NAME = 'Insights'
 FULL_APPLICATION_NAME = '{0} {1}'.format(PLATFORM_NAME, APPLICATION_NAME)
 
@@ -399,15 +399,15 @@ with open(join(DOCS_ROOT, "config.ini")) as config_file:
 ########## END DOCS/HELP CONFIGURATION
 
 ########## COURSE API
-COURSE_API_URL = 'http://127.0.0.1:8000/api/courses/v1/'
-GRADING_POLICY_API_URL = 'http://127.0.0.1:8000/api/grades/v1/'
+COURSE_API_URL = 'http://127.0.0.1:18000/api/courses/v1/'
+GRADING_POLICY_API_URL = 'http://127.0.0.1:18000/api/grades/v1/'
 
 # If no key is specified, the authenticated user's OAuth2 access token will be used.
 COURSE_API_KEY = None
 ########## END COURSE API
 
 ########## MODULE_PREVIEW
-MODULE_PREVIEW_URL = 'http://127.0.0.1:8000/xblock'
+MODULE_PREVIEW_URL = 'http://127.0.0.1:18000/xblock'
 ########## END MODULE_PREVIEW
 
 ########## EXTERNAL SERVICE TIMEOUTS
