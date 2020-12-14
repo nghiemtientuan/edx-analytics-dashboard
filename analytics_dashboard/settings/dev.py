@@ -45,11 +45,11 @@ if os.environ.get('ENABLE_DJANGO_TOOLBAR', '').lower() in ('true', 't', '1'):
 INTERNAL_IPS = ('127.0.0.1',)
 ########## END TOOLBAR CONFIGURATION
 
-LMS_COURSE_SHORTCUT_BASE_URL = 'https://example.com/courses'
-CMS_COURSE_SHORTCUT_BASE_URL = 'https://studio.example.com/course'
+LMS_COURSE_SHORTCUT_BASE_URL = 'http://localhost:18000/courses'
+CMS_COURSE_SHORTCUT_BASE_URL = 'http://localhost:18010/courses'
 
 ########## BRANDING
-PLATFORM_NAME = 'Open edX'
+PLATFORM_NAME = 'BKEdX'
 APPLICATION_NAME = 'Insights'
 FULL_APPLICATION_NAME = '{0} {1}'.format(PLATFORM_NAME, APPLICATION_NAME)
 ########## END BRANDING
@@ -88,7 +88,7 @@ REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = (
 ########## END REST FRAMEWORK CONFIGURATION
 
 ########## DATA API CONFIGURATION
-DATA_API_AUTH_TOKEN = 'edx'
+DATA_API_AUTH_TOKEN = 'token_here'
 ########## END DATA API CONFIGURATION
 
 ########## SECRET CONFIGURATION

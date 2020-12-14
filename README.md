@@ -1,5 +1,3 @@
-Part of [Open edX](https://open.edx.org/)
-
 edX Analytics Dashboard [![BuildStatus](https://travis-ci.org/edx/edx-analytics-dashboard.svg?branch=master)](https://travis-ci.org/edx/edx-analytics-dashboard) [![CoverageStatus](https://img.shields.io/coveralls/edx/edx-analytics-dashboard.svg)](https://coveralls.io/r/edx/edx-analytics-dashboard?branch=master)
 =======================
 Dashboard to display course analytics to course teams
@@ -8,23 +6,35 @@ Prerequisites
 -------------
 * Python 3.5.x
 * [gettext](http://www.gnu.org/software/gettext/)
+  
+        $ $ apt install gettext
+  
 * [node](https://nodejs.org) 12.11.1
 * [npm](https://www.npmjs.org/) 6.11.3
 * [JDK 7+](http://openjdk.java.net/)
+  
+        $ sudo apt-get install openjdk-8-jre (or openjdk-7-jre)
+        $ apt install libpython3.5-dev
 
 Warning: You must have NPM version 5.5.1. Using another version might result in
-a different `package-lock.json` file. Committing those changes might break our
-deployments which use NPM 5.5.1 and expect no changes after running `npm
-install`. [nodeenv](https://github.com/ekalinin/nodeenv) or
-[n](https://github.com/tj/n) are tools that you can use to work on different
-Node.js and NPM versions than your system installed versions.
+a different `package-lock.json` file.
 
-We have a TODO to set-up the development environment with a Docker container so
-that you will not have to manage Node and NPM versions yourself.
+        $ pip install virtualenv
+        $ virtualenv venv
+        $ virtualenv -p python3 venv
+        $ source venv/bin/activate
+        $ python3 -m pip install --upgrade pip==9.0.3
+
+        $ pip install nodeenv
+        $ nodeenv --node=12.11.1 --npm=6.11.3 -p
 
 Getting Started
 ---------------
 1. Get the code (e.g. clone the repository).
+   
+        $ git clone https://github.com/nghiemtientuan/edx-analytics-dashboard.git
+        $ git checkout git checkout open-release/juniper.master
+   
 2. Install the Python/Node requirements:
 
         $ make develop
@@ -37,38 +47,65 @@ Getting Started
 
         $ npm start
 
-If you plan on running the Django development server on a different port or
-host, make sure to set the `DJANGO_DEV_SERVER` environmental variable. For
-example:
-
+5. Run resources server:
+   
         $ DJANGO_DEV_SERVER='http://localhost:9000' npm start
 
-5. In a separate terminal run the Django development server:
+6. (run in other terminal) In a separate terminal run the Django development server:
 
-        $ ./manage.py runserver 0.0.0.0:8110
+        $ ./manage.py runserver 0.0.0.0:9000
 
-By default the Django Default Toolbar is disabled. To enable it set the environmental variable ENABLE_DJANGO_TOOLBAR.
+(optional) By default the Django Default Toolbar is disabled. To enable it set the environmental variable ENABLE_DJANGO_TOOLBAR. Alternatively, you can launch the server using:
+                
+        $ ENABLE_DJANGO_TOOLBAR=1 ./manage.py runserver 0.0.0.0:9000
 
-Alternatively, you can launch the server using:
+Visit http://localhost:9000 in your browser and then login through the LMS to access Insights (see **Authentication & Authorization** below for more details).
 
-        $ ENABLE_DJANGO_TOOLBAR=1 ./manage.py runserver
+Setup Authentication & Authorization
+------------------------------
+1. Setup Authentication & Authorization in edx-analytic-data-api
+2. Setup application lms admin (/18000/admin) page:
+    
+    2.1 Add application in http://localhost:18000/admin/oauth2_provider/application
+            
+            {
+                Client id: "clien_id_string_auto_random" (auto_random)
+                user: 3
+                redirect uri: http://localhost:9000/complete/edx-oauth2/
+                type: confidential
+                grant type: authorization code
+                Client secret: "clien_secret_string_auto_random" (auto_random)
+                name: analytic-dashboard-sso
+                tick: Skip authorization
+            }
 
-Visit http://localhost:9000 in your browser and then login through the LMS to
-access Insights (see **Authentication & Authorization** below for more details).
+    2.2 Add application access in http://localhost:18000/admin/oauth_dispatch/applicationaccess
+            
+            {
+                Application: analytic-dashboard-sso
+                Scopes: "user_id"
+            }
 
-Site-Wide Announcements
------------------------
-Site-wide announcements are facilitated by
-[pinax-announcements](https://github.com/pinax/pinax-announcements/blob/master/docs/index.md).
-Use the admin site to manage announcements and dismissals.
+3. Copy Client id and Client secret
+
+    Edit file in analytics_dashboard/settings/base.py:
+
+        SOCIAL_AUTH_EDX_OAUTH2_KEY = "clien_id_string_auto_random"
+        SOCIAL_AUTH_EDX_OAUTH2_SECRET = "clien_secret_string_auto_random"
+
+4. Using postman to create api(get) http://localhost:9000/api-token-auth to get token
+
+    Edit file in analytics_dashboard/settings/base.py:
+   
+        DATA_API_AUTH_TOKEN = 'paste_token_here'
+
+Setup in server
+------------------------------
+
+Edit file analytics_dashboard/settings/base.py and analytics_dashboard/settings/dev.py
 
 Feature Gating
 --------------
-Need a fallback to disable a feature? Create a [Waffle](http://waffle.readthedocs.org/en/latest/)
-[switch](http://waffle.readthedocs.org/en/latest/types/switch.html):
-
-        $ ./manage.py waffle_switch name-of-my-switch on --create
-
 See the [Waffle documentation](http://waffle.readthedocs.org/en/latest/) for
 details on utilizing features in code and templates.
 
@@ -88,77 +125,6 @@ The following switches are available:
 | enable_course_filters                | Enable filters (e.g. pacing type) on courses page.    |
 | enable_course_passing                | Enable passing column on courses page.                |
 
-[Waffle](http://waffle.readthedocs.org/en/latest/) flags are used to disable/enable
-functionality on request (e.g. turning on beta functionality for superusers). Create a
-[flag](http://waffle.readthedocs.io/en/latest/usage/cli.html#flags):
-
-        $ ./manage.py waffle_flag name-of-my-flag --everyone --create
-
-The following flags are available:
-
-| Flag                           | Purpose                                               |
-|--------------------------------|-------------------------------------------------------|
-| display_learner_analytics      | Display Learner Analytics links                       |
-
-Authentication & Authorization
-------------------------------
-By default, this application relies on an external OAuth2 provider
-(contained within the [LMS](https://github.com/edx/edx-platform)) for authentication and authorization. If you are a
-developer, and do not want to setup edx-platform, you can get around this requirement by doing the following:
-
-1. Set `ENABLE_AUTO_AUTH` to `True` in your settings file. (This is the default value in `settings/local.py`).
-2. Set `ENABLE_COURSE_PERMISSIONS` to `False` in your settings file.
-3. Visit `http://localhost:9000/test/auto_auth/` to create and login as a new user.
-
-Note: When using OAuth2, the dashboard and provider must be accessed via different host names
-(e.g. dashboard.example.org and provider.example.org) in order to avoid issues with session cookies being overwritten. (This was true with the use of the removed Open ID Connect, but is untested since.)
-
-Note 2: Seeing signature expired errors upon login? Make sure the clocks of your dashboard and OAuth servers are synced
-with a centralized time server. If you are using a VM, the VM's clock may skew when the host is suspended. Restarting
-the NTP service usually resolves this issue.
-
-Internationalization (i18n)
----------------------------
-In order to work with translations you must have you must have [gettext](http://www.gnu.org/software/gettext/) installed. gettext
- should be available via your preferred package manager (e.g. `yum`, `apt-get`, `brew`, or `ports`).
-###Development###
-When adding or updating code, you should ensure all necessary strings are marked for translation. We have provided a
-command that will generate dummy translations to help with this. This will create an "Esperanto" translation that is
-actually over-accented English.
-
-        $ make generate_fake_translations
-
-Restart your server after running the command above and update your browser's language preference to Esperanto (eo).
-Navigate to a page and verify that you see fake translations. If you see plain English instead, your code is not being
-properly translated.
-
-###Updating Translations###
-Once development is complete, translation source files (.po) must be generated. The command below will generate the
-necessary source files and verify that an updated is needed:
-
-        $ make validate_translations
-
-If not [automated](https://docs.transifex.com/projects/updating-content#automatic-updates), the generated files located
-in `analytics_dashboard/conf/locale/en/LC_MESSAGES` should be uploaded to the
-[analytics-dashboard](https://www.transifex.com/projects/p/edx-platform/resource/analytics-dashboard/) and
-[analytics-dashboard-js](https://www.transifex.com/projects/p/edx-platform/resource/analytics-dashboard-js/) resources
-at Transifex where translators will begin the translation process. This task can be completed using the [Transifex
-Client](http://docs.transifex.com/developer/client/):
-
-        $ tx push -s
-
-Once translations are completed, run the commands below to download and compile the translations:
-
-        $ make pull_translations
-
-Note that only the following files (for each language) should be committed to this repository:
-
-* django.mo
-* django.po
-* djangojs.mo
-* djangojs.po
-
-
 Asset Pipeline
 --------------
 Static files are managed via [webpack](https://webpack.js.org/).
@@ -170,108 +136,14 @@ terminal:
 
     $ npm start
 
-Alternatively, you can compile production webpack bundles by running (runs
-webpack using the prod config and then exits):
-
-    $ make static
-
-Before committing new JavaScript, make sure it conforms to our style guide by
-running [eslint](http://eslint.org/), and fixing any errors.
-
-    $ npm run lint -s
-
-You can also try automatically fixing the errors and applying an additional
-level of standardized formatting with
-[prettier](https://github.com/prettier/prettier) by running
-[prettier-eslint](https://github.com/prettier/prettier-eslint).
-
-    $ npm run format
-
-Note: this will only format a subset of the JavaScript, we haven't converted the
-formatting of all of our files yet. Edit the directory list in `package.json`.
-
-Theming and Branding
---------------------
-We presently have support for basic branding of the logo displayed in the header and on error pages. This is facilitated
-by including an additional SCSS file specifying the path and dimensions of the logo. The default Open edX theme located
-at `static/sass/themes/open-edx.scss` is a good starting point for those interested in changing the logo. Once your
-customizations are complete, update the value of the yaml configuration setting `INSIGHTS_THEME_SCSS` with the path to
-your new SCSS file. If running Webpack manually, you will have to set the environmental variable `THEME_SCSS` to your
-file before running Webpack.
-
-Developers may also choose to further customize the site by changing the variables loaded by SCSS. This is most easily
-accomplished via the steps below. This will allow for easily changing basic colors and spacing.
-
-        1. Copy `static/sass/_config-variables.scss` to a new file (e.g. static/sass/_config-variables-awesome-theme).
-        2. Modify your variable values, but not the names, to correspond with your theme.
-        3. Update `static/sass/style-application.scss` to load your file immediately after loading `config-variables`.
-
-We welcome contributions from those interested in further expanding theming support!
-
-License
--------
-The code in this repository is licensed under version 3 of the AGPL unless otherwise noted.
-
-Please see `LICENSE.txt` for details.
-
-How to Contribute
------------------
-
-Contributions are very welcome, but for legal reasons, you must submit a signed
-[individual contributor's agreement](http://code.edx.org/individual-contributor-agreement.pdf)
-before we can accept your contribution. See our
-[CONTRIBUTING](https://github.com/edx/edx-platform/blob/master/CONTRIBUTING.rst)
-file for more information -- it also contains guidelines for how to maintain
-high code quality, which will make your contribution more likely to be accepted.
-
-### JavaScript Code Quality
-JavaScript developers should adhere to the [edX JavaScript standards](https://github.com/edx/edx-platform/wiki/Javascript-standards-for-the-edx-platform).
-These standards are enforced using [JSHint](http://www.jshint.com/) and [jscs](https://www.npmjs.org/package/jscs).
-
-Testing
--------
-
-### Unit Tests & Code Quality
-The complete unit test and quality suite can be run with:
-
-        $ make validate
-
-The Python portion of this project uses `nose` to find and run tests. `pep8` and `pylint` are used to verify code
-quality. All three can be run with the command below:
-
-        $ make validate_python
-
-
-JavaScript tests and linting can be run with the following command:
-
-        $ make validate_js
-
-#### Continuous Integration (CI) Reports
-The commands above will generate coverage reports the `build` directory. Python reports are located in `build/coverage`.
- JavaScript reports are in `build/coverage-js`. Both should have a [Cobertura](http://cobertura.github.io/cobertura/)
- `coverage.xml` file and an `html` directory with a human-readable HTML site.
-
-
 ### Acceptance Tests
-The acceptance tests are designed to test the application as whole (contrasted with unit tests that test individual
-components). These tests load the application in a browser and verify that data and elements appear as expected.
-
-The Bash script `runAcceptance.sh` will start the Django server and run the tests against the server. After the tests
-are run the server will be shutdown. Simply run the command below:
-
-        $ ./runAcceptance.sh
-
-If you already have a server running, there is also a make task you can run instead of the script above.
-
-        $ make accept
-
 The tests make a few assumptions about URLs and authentication. These can be overridden by setting environment variables
 when executing either of the commands above.
 
 | Variable                     | Purpose                                    | Default Value                    |
 |------------------------------|--------------------------------------------|----------------------------------|
 | DASHBOARD_SERVER_URL         | URL where the dashboard is served          | http://127.0.0.1:9000            |
-| API_SERVER_URL               | URL where the analytics API is served      | http://127.0.0.1:9001/api/v0     |
+| API_SERVER_URL               | URL where the analytics API is served      | http://127.0.0.1:8000/api/v0     |
 | API_AUTH_TOKEN               | Analytics API authentication token         | edx                              |
 | DASHBOARD_FEEDBACK_EMAIL     | Feedback email in the footer               | override.this.email@example.com  |
 | TEST_USERNAME                | Username used to login to the app          | edx                              |
@@ -289,23 +161,9 @@ when executing either of the commands above.
 | ENABLE_COURSE_LIST_PASSING   | Tests on the passing learners column in the course list | false               |
 
 
-Override example:
-
-        $ DASHBOARD_SERVER_URL="http://example.com" API_SERVER_URL="http://api.example.com" API_AUTH_TOKEN="example" make accept
-
 #### Course Validation
 In addition to the standard acceptance tests, there is also a script to validate all course pages and report their
 HTTP status codes. Use the command below to execute this script.
 
         $ make course_validation
 
-
-Reporting Security Issues
--------------------------
-Please do not report security issues in public. Please email security@edx.org.
-
-
-Mailing List and IRC Channel
-----------------------------
-You can discuss this code on the [edx-code Google Group](https://groups.google.com/forum/#!forum/edx-code) or in the
-`edx-code` IRC channel on Freenode.
