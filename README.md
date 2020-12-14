@@ -7,7 +7,7 @@ Prerequisites
 * Python 3.5.x
 * [gettext](http://www.gnu.org/software/gettext/)
   
-        $ $ apt install gettext
+        $ apt install gettext
   
 * [node](https://nodejs.org) 12.11.1
 * [npm](https://www.npmjs.org/) 6.11.3
@@ -98,6 +98,13 @@ Setup Authentication & Authorization
     Edit file in analytics_dashboard/settings/base.py:
    
         DATA_API_AUTH_TOKEN = 'paste_token_here'
+
+5. enable ENABLE_OAUTH2_PROVIDER in /edx/etc/lms.yml
+
+         $ make lms-shell
+         $ cd /edx/etc
+         $ vi lms.yml
+         ENABLE_OAUTH2_PROVIDER=True
 
 Setup in server
 ------------------------------
